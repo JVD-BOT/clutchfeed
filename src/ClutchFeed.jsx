@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+import { useState, useEffect, useRef } from "react";
+import React from "react";
+// test v10── CONSTANTS ────────────────────────────────────────────────────────────────
 
 const GAME_COLORS = { all:"#00F5FF", valorant:"#FF2D55", cs2:"#FF6B00", lol:"#FFD700", fortnite:"#BF00FF" };
 const GAME_LABELS = { valorant:"VALORANT", cs2:"CS2", lol:"LEAGUE", fortnite:"FORTNITE" };
@@ -63,6 +63,56 @@ const TRENDING = [
 
 
 // ─── AI REFRESH ───────────────────────────────────────────────────────────────
+
+
+// ─── YOUTUBE DATA API CONFIG ──────────────────────────────────────────────────
+// HOW TO GET YOUR FREE KEY (takes 5 minutes):
+// 1. Go to console.cloud.google.com
+// 2. Create a new project → name it "ClutchFeed"
+// 3. Enable "YouTube Data API v3"
+// 4. Credentials → Create API Key → copy it here
+// 5. Free tier: 10,000 units/day. Each search = 100 units = 100 searches/day free
+//
+// UNTIL YOU ADD A KEY: app uses the YT_POOL backup IDs below
+const YT_API_KEY = "AIzaSyAbbySGMmAic6JWHSQNFVYdYR2RssqZKXA"; // ← ACTIVE KEY
+
+// YouTube search queries per game — what the API will search for
+const YT_SEARCH_QUERIES = {
+  valorant: "valorant esports highlights clutch 2026",
+  cs2:      "counter strike 2 cs2 highlights pro 2026",
+  lol:      "league of legends lol esports highlights 2026",
+  fortnite: "fortnite competitive highlights fncs 2026",
+  apex:     "apex legends algs highlights clutch 2026",
+  dota:     "dota 2 esports highlights ti 2026",
+  cod:      "warzone call of duty highlights 2026",
+  pubg:     "pubg battlegrounds esports highlights 2026",
+};
+
+// Fetch real video IDs from YouTube Data API v3
+// Returns array of video IDs, falls back to YT_POOL if no key or quota hit
+async function fetchRealYTIds(game, count = 6) {
+  if (!YT_API_KEY) return YT_POOL[game] || YT_POOL.valorant;
+  try {
+    const query = YT_SEARCH_QUERIES[game] || "esports highlights 2026";
+    const url = `https://www.googleapis.com/youtube/v3/search?part=id&q=${encodeURIComponent(query)}&type=video&videoCategoryId=20&maxResults=${count}&order=viewCount&key=${YT_API_KEY}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    const ids  = (data.items || []).map(i => i.id.videoId).filter(Boolean);
+    return ids.length > 0 ? ids : (YT_POOL[game] || YT_POOL.valorant);
+  } catch(e) {
+    return YT_POOL[game] || YT_POOL.valorant;
+  }
+}
+
+// Cache fetched IDs so we don't hammer the API
+const ytIdCache = {};
+async function getYTIdForGame(game) {
+  if (!ytIdCache[game]) {
+    ytIdCache[game] = await fetchRealYTIds(game, 8);
+  }
+  const pool = ytIdCache[game];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 
 async function fetchAIClips(game, count = 5) {
   const label = game === "all" ? "mixed esports (valorant, cs2, lol, fortnite)" : (GAME_LABELS[game] || game);
@@ -1445,3 +1495,4 @@ export default function ClutchFeed() {
     </div>
   );
 }
+ // test
