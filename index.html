@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PWA Meta -->
+    <meta name="theme-color" content="#07001A" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ClutchFeed" />
+
+    <!-- SEO -->
+    <meta name="description" content="Esports highlights, live scores and community in one feed. Valorant, CS2, League of Legends, Fortnite." />
+
+    <!-- Open Graph (for sharing) -->
+    <meta property="og:title" content="ClutchFeed — Esports Highlights Feed" />
+    <meta property="og:description" content="Clips, live scores and esports community in one place." />
+    <meta property="og:type" content="website" />
+
+    <!-- Apple touch icon (swap with your real logo later) -->
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+    <!-- Google Fonts preconnect for faster load -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <title>ClutchFeed — Esports Highlights</title>
+
+    <style>
+      /* Prevent flash of unstyled content */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body, #root { height: 100%; background: #07001A; }
+      body { overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
