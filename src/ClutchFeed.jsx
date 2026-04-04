@@ -10,10 +10,10 @@ const GAME_ICON   = { all:"grid", valorant:"xhair", cs2:"gun", lol:"sword", fort
 const CAT_ICON    = { all:"diamond", clutch:"flame", play:"bolt", pro:"crown", funny:"skull" };
 
 const YT_POOL = {
-  valorant: ["HmRlCaFvFzI","3DVl4-jXSkA","JQGRg8XcHRY","vBPFDIOQ9FU","NzHkK4smhOM"],
-  cs2:      ["pEiDA59MFSk","WYSTgLFMN28","FkJ3NMhRFmc","Bw9P_ZXWDJU","q5yjqVxTJiU"],
-  lol:      ["FRTiIWZKoSo","4Wy_OIXMi_c","AoV0xZfDFGE","FpX-gm84GGI","LXcYBSnbYoU"],
-  fortnite: ["2iLPQEYBqzE","mMfngLQXqWc","iC9P4-5Bpqk","8hFBCgBJDus","nTquXN3HTUE"],
+    valorant: ["hQyGZB5nS9A","_BZZBYsKceQ","3u2LgAksdE0","XGXFFmy9j8s","ZQAeYXv-ggo"],
+    cs2:      ["MFU6AGjVFWs","l9monkN_cEM","n-4IQdkaPWw","OkNShuUx_Qw","MGNDrJLJtQw"],
+    lol:      ["xauADXTSqgo","w0-uua72aig","AOTfM6H8XOo","crwcXwFUJy8","xauADXTSqgo"],
+    fortnite: ["wKZb8XHfMhA","QY4hNZP5aTY","-nhZl_b4uBg","cq_2vB0aHk8","nfJ7lVxVcQA"],
 };
 const pickYt = (game) => {
   const pool = YT_POOL[game] || Object.values(YT_POOL).flat();
