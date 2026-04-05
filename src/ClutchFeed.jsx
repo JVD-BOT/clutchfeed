@@ -12,7 +12,7 @@ const CAT_ICON    = { all:"diamond", clutch:"flame", play:"bolt", pro:"crown", f
 const YT_POOL = {
     valorant: ["hQyGZB5nS9A","_BZZBYsKceQ","3u2LgAksdE0","XGXFFmy9j8s","ZQAeYXv-ggo"],
     cs2:      ["MFU6AGjVFWs","l9monkN_cEM","n-4IQdkaPWw","OkNShuUx_Qw","MGNDrJLJtQw"],
-    lol:      ["xauADXTSqgo","w0-uua72aig","AOTfM6H8XOo","crwcXwFUJy8","xauADXTSqgo"],
+    lol:      ["xauADXTSqgo","w0-uua72aig","AOTfM6H8XOo","crwcXwFUJy8","ZflQjkbn17g"],
     fortnite: ["wKZb8XHfMhA","QY4hNZP5aTY","-nhZl_b4uBg","cq_2vB0aHk8","nfJ7lVxVcQA"],
 };
 const pickYt = (game) => {
@@ -74,7 +74,7 @@ const TRENDING = [
 // 5. Free tier: 10,000 units/day. Each search = 100 units = 100 searches/day free
 //
 // UNTIL YOU ADD A KEY: app uses the YT_POOL backup IDs below
-const YT_API_KEY = "AIzaSyAbbySGMmAic6JWHSQNFVYdYR2RssqZKXA"; // ← ACTIVE KEY
+const YT_API_KEY = ""; // ← Paste your key here. NEVER commit real API keys to source code.
 
 // YouTube search queries per game — what the API will search for
 const YT_SEARCH_QUERIES = {
@@ -117,9 +117,16 @@ async function getYTIdForGame(game) {
 async function fetchAIClips(game, count = 5) {
   const label = game === "all" ? "mixed esports (valorant, cs2, lol, fortnite)" : (GAME_LABELS[game] || game);
   try {
+    // NOTE: Calling the Anthropic API directly from the browser will fail due to CORS.
+    // In production, proxy this through your own backend server.
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+        // "x-api-key": "YOUR_KEY" — must be provided via a backend proxy, not client-side
+      },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 900,
@@ -916,7 +923,7 @@ function VideoPlayer({ clips, startIndex, onClose, onLike }) {
         {!embedFailed && !loading && (
           <button onClick={() => setMuted(m => !m)} style={{ position:"absolute", bottom:10, right:10, background:"rgba(0,0,0,0.7)", border:`1px solid ${gc}60`, borderRadius:8, padding:"6px 8px", cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
             <Icon name={muted ? "mute" : "unmute"} size={12} color={gc} />
-            <span style={{ fontSize:9, fontFamily:"'Chakra Petch',sans-serif", color:gc, letterSpacing:1 }}>{muted ? "TAP TO UNMUTE" : "MUTED"}</span>
+            <span style={{ fontSize:9, fontFamily:"'Chakra Petch',sans-serif", color:gc, letterSpacing:1 }}>{muted ? "TAP TO UNMUTE" : "SOUND ON"}</span>
           </button>
         )}
       </div>
@@ -1022,7 +1029,11 @@ export default function ClutchFeed() {
   };
 
   const openPlayer = (clipId) => {
-    const idx = filtered.findIndex(c => c.id === clipId);
+    let idx = filtered.findIndex(c => c.id === clipId);
+    if (idx === -1) {
+      // Clip not in current filter (e.g. from leaderboard/saved) — search all clips
+      idx = clips.findIndex(c => c.id === clipId);
+    }
     setPlayerStart(Math.max(0, idx));
     setPlayerOpen(true);
   };
@@ -1056,10 +1067,11 @@ export default function ClutchFeed() {
 
   const savedClips = clips.filter(c => c.saved);
 
-  const completeOnboarding = ({ games, cats }) => {
+  const completeOnboarding = ({ games, cats, follows }) => {
     setShowOnboarding(false);
     if (games.length > 0) setActiveGame(games[0]);
     if (cats.length > 0) setActiveCategory(cats[0]);
+    // follows is available for future use (e.g. filtering by followed players)
   };
 
   const openComments = (clip, e) => { e?.stopPropagation(); setCommentClip(clip); setShowComments(true); };
@@ -1243,6 +1255,7 @@ export default function ClutchFeed() {
                         {clip.saved ? "SAVED" : "SAVE"}
                       </button>
                     </div>
+                    <ReactBar clip={clip} onReact={toggleReaction} />
                   </div>
                 </div>
               </div>
